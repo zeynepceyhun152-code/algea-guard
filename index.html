@@ -3,95 +3,288 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AlgaeGuard — HAB Early Warning</title>
+<title>AlgaeGuard — Waterway Health Monitor</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  :root{
-    --bg:#07161a; --panel:#0e2229; --panel2:#123039; --accent:#3ee6a8;
-    --accent2:#5ec9ff; --warn:#f5c344; --alert:#ff5c5c; --text:#e9f6f2; --muted:#8fb0ac;
+  :root {
+    --bg: #fafaf9;
+    --card-bg: #ffffff;
+    --border: #e7e5e4;
+    --border-focus: #a8a29e;
+    --text-primary: #1c1917;
+    --text-secondary: #57534e;
+    --text-muted: #78716c;
+    --accent: #0284c7;
+    --accent-hover: #0369a1;
+    --success: #15803d;
+    --success-bg: #f0fdf4;
+    --warning: #b45309;
+    --warning-bg: #fffbeb;
+    --danger: #b91c1c;
+    --danger-bg: #fef2f2;
+    --radius: 8px;
   }
-  *{box-sizing:border-box;}
-  body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,#0d2b30,var(--bg));color:var(--text);}
-  header{padding:24px 32px 8px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;}
-  header h1{margin:0;font-size:26px;letter-spacing:.5px;}
-  header h1 span{color:var(--accent);}
-  header p{margin:0;color:var(--muted);font-size:14px;}
-  main{max-width:1180px;margin:0 auto;padding:8px 32px 60px;display:grid;grid-template-columns:1.4fr 1fr;gap:20px;}
-  @media(max-width:900px){main{grid-template-columns:1fr;}}
-  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid #1c3b42;border-radius:14px;padding:18px 20px;margin-bottom:20px;}
-  .card h2{margin:0 0 12px;font-size:15px;text-transform:uppercase;letter-spacing:1px;color:var(--accent2);}
-  select,input{background:#0a1f24;border:1px solid #244b53;color:var(--text);border-radius:8px;padding:8px 10px;font-size:14px;width:100%;}
-  label{font-size:12px;color:var(--muted);display:block;margin:8px 0 3px;}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  button{margin-top:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#00201a;font-weight:700;padding:11px 16px;border-radius:9px;cursor:pointer;width:100%;font-size:14px;}
-  button:hover{filter:brightness(1.08);}
-  .metric{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #1e3d44;font-size:14px;}
-  .metric b{color:var(--accent);}
-  #result{margin-top:16px;padding:14px;border-radius:10px;background:#0a1f24;display:none;}
-  .badge{display:inline-block;padding:4px 12px;border-radius:20px;font-weight:700;font-size:13px;}
-  .Watch{background:#1d4d3a;color:var(--accent);}
-  .Elevated{background:#4d3d1d;color:var(--warn);}
-  .Alert{background:#4d1d1d;color:var(--alert);}
-  canvas{max-height:280px;}
-  .foot{color:var(--muted);font-size:12px;margin-top:10px;line-height:1.5;}
-  .pill{display:inline-block;background:#0a1f24;border:1px solid #244b53;border-radius:20px;padding:4px 10px;font-size:12px;color:var(--muted);margin-right:6px;}
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    background: var(--card-bg);
+    padding: 20px 0;
+  }
+
+  .header-container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .brand p {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  main {
+    max-width: 1120px;
+    margin: 32px auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 860px) {
+    main { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .card-header {
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .card-subtitle {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  select, input {
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  select:focus, input:focus {
+    border-color: var(--border-focus);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 20px;
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  button:hover {
+    background-color: var(--accent-hover);
+  }
+
+  .metrics-list {
+    margin-top: 12px;
+  }
+
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .metric-row:last-child {
+    border-bottom: none;
+  }
+
+  .metric-label { color: var(--text-secondary); }
+  .metric-val { font-weight: 600; color: var(--text-primary); }
+
+  #result {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 6px;
+    background: #f5f5f4;
+    border: 1px solid var(--border);
+    display: none;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .Watch { background: var(--success-bg); color: var(--success); border: 1px solid #bbf7d0; }
+  .Elevated { background: var(--warning-bg); color: var(--warning); border: 1px solid #fef08a; }
+  .Alert { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
+
+  canvas { max-height: 260px; margin-top: 16px; }
+
+  .badge-container {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 12px;
+    color: var(--text-muted);
+    background: #f5f5f4;
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
 </style>
 </head>
 <body>
+
 <header>
-  <h1>Algae<span>Guard</span></h1>
-  <p>24-hour-ahead cyanobacteria (HAB) early-warning forecasts — trained on real EPA buoy sensor data</p>
+  <div class="header-container">
+    <div class="brand">
+      <h1>AlgaeGuard</h1>
+      <p>24-hour ahead cyanobacteria early warning system</p>
+    </div>
+  </div>
 </header>
 
 <main>
   <div>
     <div class="card">
-      <h2>Waterbody trend</h2>
-      <label>Site</label>
+      <div class="card-header">
+        <h2 class="card-title">Waterbody Telemetry</h2>
+        <p class="card-subtitle">Historical daily buoy averages for cyanobacteria and chlorophyll pigments.</p>
+      </div>
+      <label for="siteSelect">Monitoring Station</label>
       <select id="siteSelect"></select>
       <canvas id="trendChart"></canvas>
-      <div class="foot">Phycocyanin (cyanobacteria pigment proxy) &amp; chlorophyll, daily buoy averages. Background shading = observed risk tier.</div>
     </div>
 
     <div class="card">
-      <h2>Model performance (held-out, time-ordered test set — no shuffling)</h2>
-      <div id="metricsBox"></div>
-      <div class="foot" id="metricsFoot"></div>
+      <div class="card-header">
+        <h2 class="card-title">Validation Metrics</h2>
+        <p class="card-subtitle">Evaluated on a time-ordered, non-shuffled test set.</p>
+      </div>
+      <div class="metrics-list" id="metricsBox"></div>
+      <p class="card-subtitle" id="metricsFoot" style="margin-top: 16px; line-height: 1.4;"></p>
     </div>
   </div>
 
   <div>
     <div class="card">
-      <h2>What-if forecast</h2>
-      <p class="foot" style="margin-top:-6px">Enter today's sensor readings to forecast tomorrow's cyanobacteria level and bloom-alert risk.</p>
-      <label>Waterbody</label>
-      <select id="wbInput"></select>
-      <div class="grid2">
-        <div><label>Water temp (°C)</label><input id="wt" type="number" value="24" step="0.1"></div>
-        <div><label>pH</label><input id="ph" type="number" value="7.8" step="0.1"></div>
-        <div><label>Specific conductivity</label><input id="cond" type="number" value="400" step="1"></div>
-        <div><label>Dissolved O₂ (mg/L)</label><input id="doConc" type="number" value="8" step="0.1"></div>
-        <div><label>Dissolved O₂ (% sat)</label><input id="doSat" type="number" value="95" step="1"></div>
-        <div><label>Turbidity (NTU)</label><input id="turb" type="number" value="3" step="0.1"></div>
-        <div><label>Chlorophyll (RFU)</label><input id="chl" type="number" value="5" step="0.1"></div>
-        <div><label>Phycocyanin today (RFU)</label><input id="phyco" type="number" value="2" step="0.1"></div>
+      <div class="card-header">
+        <h2 class="card-title">Forecast Simulator</h2>
+        <p class="card-subtitle">Enter current sensor values to predict next-day risk.</p>
       </div>
-      <button onclick="runPredict()">Forecast tomorrow →</button>
+
+      <label for="wbInput">Location</label>
+      <select id="wbInput"></select>
+
+      <div class="form-grid">
+        <div><label for="wt">Water Temp (°C)</label><input id="wt" type="number" value="24" step="0.1"></div>
+        <div><label for="ph">pH</label><input id="ph" type="number" value="7.8" step="0.1"></div>
+        <div><label for="cond">Conductivity</label><input id="cond" type="number" value="400" step="1"></div>
+        <div><label for="doConc">Dissolved O₂ (mg/L)</label><input id="doConc" type="number" value="8" step="0.1"></div>
+        <div><label for="doSat">Dissolved O₂ (%)</label><input id="doSat" type="number" value="95" step="1"></div>
+        <div><label for="turb">Turbidity (NTU)</label><input id="turb" type="number" value="3" step="0.1"></div>
+        <div><label for="chl">Chlorophyll (RFU)</label><input id="chl" type="number" value="5" step="0.1"></div>
+        <div><label for="phyco">Phycocyanin (RFU)</label><input id="phyco" type="number" value="2" step="0.1"></div>
+      </div>
+
+      <button onclick="runPredict()">Calculate Forecast</button>
       <div id="result"></div>
     </div>
 
     <div class="card">
-      <h2>The problem</h2>
-      <p style="font-size:13.5px;line-height:1.55;color:var(--muted)">
-        Cyanobacterial harmful algal blooms (HABs) shut down drinking-water intakes and
-        swimming beaches with little warning — toxin levels can spike within a day or two
-        once a bloom takes hold. EPA and state buoys already stream water-quality telemetry
-        in real time, but nobody is turning that stream into a forecast. AlgaeGuard closes
-        that gap: it converts live sensor readings into a next-day bloom-risk score, so lake
-        managers can act (issue an advisory, boost aeration, alert the water plant) before the
-        peak — not after the beach is already closed.
+      <div class="card-header">
+        <h2 class="card-title">Background</h2>
+      </div>
+      <p style="font-size: 13px; color: var(--text-secondary); margin: 0; line-height: 1.6;">
+        Harmful algal blooms can shut down drinking water intakes and recreation areas rapidly. 
+        AlgaeGuard converts raw environmental sensor streams into next-day risk scores so water 
+        managers can issue advisories or adjust treatments before peak toxicity occurs.
       </p>
-      <span class="pill">EPA buoy data</span><span class="pill">RandomForest</span><span class="pill">FastAPI</span>
+      <div class="badge-container">
+        <span class="tag">EPA Telemetry</span>
+        <span class="tag">Random Forest</span>
+        <span class="tag">FastAPI</span>
+      </div>
     </div>
   </div>
 </main>
@@ -115,8 +308,6 @@ async function loadTrend(site){
   const labels = rows.map(r => r.date);
   const phyco = rows.map(r => r.phycocyanin);
   const chl = rows.map(r => r.chlorophyll);
-  const colors = {Watch:'#3ee6a833', Elevated:'#f5c34433', Alert:'#ff5c5c33'};
-  const bg = rows.map(r => colors[r.risk_tier] || 'transparent');
 
   if (chart) chart.destroy();
   const ctx = document.getElementById('trendChart').getContext('2d');
@@ -125,16 +316,18 @@ async function loadTrend(site){
     data: {
       labels,
       datasets: [
-        {label:'Phycocyanin (RFU)', data: phyco, borderColor:'#3ee6a8', backgroundColor:bg, tension:.25, pointRadius:0, borderWidth:2},
-        {label:'Chlorophyll (RFU)', data: chl, borderColor:'#5ec9ff', tension:.25, pointRadius:0, borderWidth:1.5}
+        {label:'Phycocyanin', data: phyco, borderColor:'#0284c7', backgroundColor:'#0284c710', fill: true, tension:.2, pointRadius:0, borderWidth:1.5},
+        {label:'Chlorophyll', data: chl, borderColor:'#78716c', tension:.2, pointRadius:0, borderWidth:1, borderDash:[4,4]}
       ]
     },
     options: {
-      responsive:true,
-      plugins:{legend:{labels:{color:'#e9f6f2'}}},
-      scales:{
-        x:{ticks:{color:'#8fb0ac', maxTicksLimit:8}, grid:{color:'#1c3b42'}},
-        y:{ticks:{color:'#8fb0ac'}, grid:{color:'#1c3b42'}}
+      responsive: true,
+      plugins: {
+        legend: { position: 'top', align: 'end', labels: { boxWidth: 12, font: { size: 12 } } }
+      },
+      scales: {
+        x: { ticks: { color:'#78716c', maxTicksLimit:6 }, grid: { display: false } },
+        y: { ticks: { color:'#78716c' }, grid: { color:'#f5f5f4' } }
       }
     }
   });
@@ -147,15 +340,13 @@ async function loadMetrics(){
   const m = await res.json();
   const box = document.getElementById('metricsBox');
   box.innerHTML = `
-    <div class="metric"><span>Bloom-alert recall (catches real Alert days)</span><b>${(m.classifier_accuracy*100).toFixed(0)}% acc</b></div>
-    <div class="metric"><span>Bloom-alert macro F1</span><b>${m.classifier_macro_f1}</b></div>
-    <div class="metric"><span>Next-day level forecast MAE</span><b>${m.regressor_mae} RFU</b></div>
-    <div class="metric"><span>Naive "tomorrow = today" baseline MAE</span><b>${m.baseline_persistence_mae} RFU</b></div>
-    <div class="metric"><span>Train / test days (time-ordered split)</span><b>${m.n_train} / ${m.n_test}</b></div>
+    <div class="metric-row"><span class="metric-label">Alert Recall</span><span class="metric-val">${(m.classifier_accuracy*100).toFixed(0)}%</span></div>
+    <div class="metric-row"><span class="metric-label">Macro F1 Score</span><span class="metric-val">${m.classifier_macro_f1}</span></div>
+    <div class="metric-row"><span class="metric-label">Forecast MAE</span><span class="metric-val">${m.regressor_mae} RFU</span></div>
+    <div class="metric-row"><span class="metric-label">Persistence Baseline</span><span class="metric-val">${m.baseline_persistence_mae} RFU</span></div>
   `;
   document.getElementById('metricsFoot').innerHTML =
-    `Trained across ${m.waterbodies.length} real waterbodies: ${m.waterbodies.join(', ')}. ` +
-    `We report the persistence baseline honestly — it beats our regressor on raw level (real cyanobacteria data is noisy), which is why the deployable product is the binary bloom-alert classifier, tuned for high recall on Alert days.`;
+    `Dataset: ${m.n_train} training days, ${m.n_test} test days across ${m.waterbodies.join(', ')}.`;
 }
 
 async function runPredict(){
@@ -177,10 +368,10 @@ async function runPredict(){
   const box = document.getElementById('result');
   box.style.display = 'block';
   box.innerHTML = `
-    <div><span class="badge ${r.risk_label}">${r.risk_label}</span></div>
-    <div class="metric"><span>Predicted next-day phycocyanin</span><b>${r.predicted_next_day_phycocyanin_rfu} RFU</b></div>
-    <div class="metric"><span>Predicted change</span><b>${r.predicted_change_rfu > 0 ? '+' : ''}${r.predicted_change_rfu} RFU</b></div>
-    <div class="metric"><span>Bloom-alert probability</span><b>${(r.bloom_alert_probability*100).toFixed(1)}%</b></div>
+    <div style="margin-bottom: 12px;"><span class="badge ${r.risk_label}">${r.risk_label} Tier</span></div>
+    <div class="metric-row"><span class="metric-label">Forecast Level</span><span class="metric-val">${r.predicted_next_day_phycocyanin_rfu} RFU</span></div>
+    <div class="metric-row"><span class="metric-label">Expected Change</span><span class="metric-val">${r.predicted_change_rfu > 0 ? '+' : ''}${r.predicted_change_rfu} RFU</span></div>
+    <div class="metric-row"><span class="metric-label">Alert Probability</span><span class="metric-val">${(r.bloom_alert_probability*100).toFixed(1)}%</span></div>
   `;
 }
 
