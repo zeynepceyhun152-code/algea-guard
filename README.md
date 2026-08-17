@@ -34,10 +34,42 @@ Ensure you have Python installed on your machine.
 ### 2. Installation & Setup
 Clone the repository and install the required dependencies:
 
-```bash
 # Clone the repository
 git clone [https://github.com/zeynepceyhun152-code/algea-guard.git](https://github.com/zeynepceyhun152-code/algea-guard.git)
 cd algae-guard
 
 # Install Python packages
 pip install fastapi uvicorn pandas scikit-learn joblib
+python -c "
+
+### 3. Model Training
+Train the RandomForest forecasting and risk-classification models on the dataset:
+
+```bash
+python train_model.py
+```
+
+### 4. Launch Application
+Start the FastAPI server:
+
+```bash
+python -m uvicorn app:app --reload --port 8000
+```
+
+Open your browser and navigate to http://localhost:8000 to view the active dashboard.
+
+## 📊 Model Architecture & Performance
+
+| Model Type | Target | Metric | Performance |
+| :--- | :--- | :--- | :--- |
+| **RandomForest Regressor** | Next-Day Phycocyanin Delta (RFU) | MAE | **0.252 RFU** (vs. 0.261 Persistence Baseline) |
+| **RandomForest Classifier** | Next-Day Bloom Alert Tier (`Watch`, `Elevated`, `Alert`) | Accuracy / F1 | **100% Recall** on critical alert events |
+
+---
+
+## 📄 License
+Distributed under the MIT License.
+'''
+
+
+
